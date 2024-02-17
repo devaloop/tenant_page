@@ -67,7 +67,7 @@ class _TenantPageState extends State<TenantPage> {
                     detailPage: LoggingOutPage(
                       username: widget.userName,
                       detail: widget.userDetail,
-                      onLoggingOut: () {},
+                      onLoggingOut: widget.onLoggingOut,
                     ),
                   ),
                 ),
@@ -166,7 +166,7 @@ class TenantAddPage extends StatelessWidget {
   }
 }
 
-class LoggingOutPage extends StatelessWidget {
+class LoggingOutPage extends StatefulWidget {
   final String username;
   final String detail;
   final dynamic Function() onLoggingOut;
@@ -179,26 +179,45 @@ class LoggingOutPage extends StatelessWidget {
   });
 
   @override
+  State<LoggingOutPage> createState() => _LoggingOutPageState();
+}
+
+class _LoggingOutPageState extends State<LoggingOutPage> {
+  late bool _isLoggingOut;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoggingOut = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: ListTile(
-          title: Text(username),
-          subtitle: Text(detail),
+          title: Text(widget.username),
+          subtitle: Text(widget.detail),
         ),
       ),
       body: Center(
-        child: FilledButton.icon(
-          onPressed: () async {
-            await onLoggingOut.call();
+        child: _isLoggingOut
+            ? const CircularProgressIndicator()
+            : FilledButton.icon(
+                onPressed: () async {
+                  setState(() {
+                    _isLoggingOut = true;
+                  });
 
-            if (!context.mounted) return;
+                  await widget.onLoggingOut.call();
 
-            Navigator.pop(context, true);
-          },
-          icon: const Icon(Icons.logout),
-          label: const Text('Logout'),
-        ),
+                  if (!context.mounted) return;
+
+                  Navigator.pop(context, true);
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text('Logout'),
+              ),
       ),
     );
   }
