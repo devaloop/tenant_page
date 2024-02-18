@@ -21,13 +21,20 @@ class MyApp extends StatelessWidget {
         title: 'Fast Chasier',
         subtitle: 'Fast Chasier',
         tenantCategoryName: 'Store',
-        addTenant: (tenent) {},
+        addTenant: (tenant) {},
         tenants: () async {
+          await Future.delayed(const Duration(seconds: 5));
           return [
             GroupContent(
               leading: const Icon(Icons.person),
               title: 'Toko Modern Sejahtera',
               subtitle: 'Toko Alat Masak & Perabotan Rumah Tangga',
+              key: Tenant(
+                id: '001',
+                name: 'Toko Modern Sejahtera',
+                detail: 'Toko Alat Masak & Perabotan Rumah Tangga',
+                owner: 'user@gmail.com',
+              ),
             ),
             GroupContent(
               leading: const Icon(Icons.person),
@@ -44,6 +51,10 @@ class MyApp extends StatelessWidget {
         userName: 'user@gmail.com',
         userDetail: 'Google Account',
         onLoggingOut: () {},
+        ownerMenu: const [],
+        menu: const [],
+        saveTenant: (Tenant tenant) {},
+        removeTenant: (Tenant tenant) {},
       ),
     );
   }

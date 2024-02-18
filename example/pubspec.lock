@@ -61,17 +61,25 @@ packages:
     dependency: "direct main"
     description:
       name: devaloop_group_item
-      sha256: "2704f5a9fa9907ab9e14803ee8174f10eddc5302b487217a580aad21d0861476"
+      sha256: "4f724817084287b71c200bb6f8e03fc4147816ab5d386f957ac999daaa5c62ec"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.3"
+  devaloop_menu_page:
+    dependency: transitive
+    description:
+      name: devaloop_menu_page
+      sha256: "6d1987c2d0ebd30091f569c4b53dd1a8d0dc4306ef375aba05d7d648472e5621"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   devaloop_tenant_page:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.3"
   fake_async:
     dependency: transitive
     description:

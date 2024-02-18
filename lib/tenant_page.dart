@@ -1,5 +1,6 @@
 library devaloop_tenant_page;
 
+import 'package:devaloop_menu_page/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:devaloop_group_item/group_item.dart';
 import 'package:devaloop_form_builder/form_builder.dart';
@@ -9,10 +10,14 @@ class TenantPage extends StatefulWidget {
   final String subtitle;
   final String tenantCategoryName;
   final dynamic Function(Tenant tenant) addTenant;
+  final dynamic Function(Tenant tenant) saveTenant;
+  final dynamic Function(Tenant tenant) removeTenant;
   final Future<List<GroupContent>> Function() tenants;
   final String userName;
   final String userDetail;
   final dynamic Function() onLoggingOut;
+  final List<GroupItem> ownerMenu;
+  final List<GroupItem> menu;
 
   const TenantPage(
       {super.key,
@@ -23,7 +28,11 @@ class TenantPage extends StatefulWidget {
       required this.tenantCategoryName,
       required this.userName,
       required this.userDetail,
-      required this.onLoggingOut});
+      required this.onLoggingOut,
+      required this.ownerMenu,
+      required this.menu,
+      required this.saveTenant,
+      required this.removeTenant});
 
   @override
   State<TenantPage> createState() => _TenantPageState();
@@ -31,6 +40,7 @@ class TenantPage extends StatefulWidget {
 
 class _TenantPageState extends State<TenantPage> {
   late Future<List<GroupContent>> _tenants;
+  Tenant? _currentTenant;
 
   void init() {
     _tenants = Future(() async {
@@ -83,7 +93,70 @@ class _TenantPageState extends State<TenantPage> {
                     children: [
                       GroupItem(
                         title: widget.tenantCategoryName,
-                        contents: snapshot.data!,
+                        contents: snapshot.data!.map((e) {
+                          return GroupContent(
+                            title: e.title,
+                            subtitle: e.subtitle,
+                            key: e.key,
+                            detail: Detail(
+                              detailPage: e.key != null &&
+                                      (e.key as Tenant).owner == widget.userName
+                                  ? MenuPage(
+                                      title: _currentTenant == null
+                                          ? e.title
+                                          : _currentTenant!.name,
+                                      subtitle: _currentTenant == null
+                                          ? e.subtitle
+                                          : _currentTenant!.detail,
+                                      menu: [
+                                        GroupItem(
+                                          title: 'Owner Access',
+                                          contents: [
+                                            GroupContent(
+                                              title: 'Edit',
+                                              subtitle: 'Edit',
+                                              detail: Detail(
+                                                detailPage: TenantDetailPage(
+                                                  tenant: (e.key as Tenant),
+                                                  saveTenant: widget.saveTenant,
+                                                  removeTenant:
+                                                      widget.removeTenant,
+                                                ),
+                                                onDetailPageClosed: (result) {
+                                                  Navigator.pop(context, true);
+                                                },
+                                              ),
+                                            ),
+                                            GroupContent(
+                                              title: 'Owner Menu',
+                                              subtitle: 'Owner Menu',
+                                              detail: Detail(
+                                                detailPage: MenuPage(
+                                                  title: 'Owner Menu',
+                                                  subtitle: 'Owner Menu',
+                                                  menu: widget.ownerMenu,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                  : MenuPage(
+                                      title: e.title,
+                                      subtitle: e.subtitle,
+                                      menu: widget.menu,
+                                    ),
+                              onDetailPageClosed: (result) {
+                                if (result != null) {
+                                  setState(() {
+                                    init();
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(),
                       ),
                       GroupItem(
                         contents: [
@@ -94,6 +167,8 @@ class _TenantPageState extends State<TenantPage> {
                             detail: Detail(
                               detailPage: TenantAddPage(
                                 addTenant: widget.addTenant,
+                                userName: widget.userName,
+                                tenantCategoryName: widget.tenantCategoryName,
                               ),
                               onDetailPageClosed: (result) {
                                 if (result != null) {
@@ -121,15 +196,30 @@ class _TenantPageState extends State<TenantPage> {
 }
 
 class TenantAddPage extends StatelessWidget {
+  final String userName;
+  final String tenantCategoryName;
   final dynamic Function(Tenant tenant) addTenant;
 
-  const TenantAddPage({super.key, required this.addTenant});
+  const TenantAddPage(
+      {super.key,
+      required this.addTenant,
+      required this.userName,
+      required this.tenantCategoryName});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Store'),
+        title: ListTile(
+          title: Text(
+            'Add $tenantCategoryName',
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            'Add $tenantCategoryName',
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -140,16 +230,18 @@ class TenantAddPage extends StatelessWidget {
               label: 'Name',
             ),
             InputText(
-              name: 'description',
-              label: 'Description',
+              name: 'detail',
+              label: 'Detail',
               isMultilines: true,
             ),
           ],
           onSubmit: (context, inputValues) async {
             await addTenant.call(
               Tenant(
-                  name: inputValues['name']!.getString()!,
-                  desctiption: inputValues['desctiption']!.getString()!),
+                name: inputValues['name']!.getString()!,
+                detail: inputValues['detail']!.getString()!,
+                owner: userName,
+              ),
             );
 
             if (!context.mounted) return;
@@ -160,6 +252,79 @@ class TenantAddPage extends StatelessWidget {
             label: 'Add',
             icon: Icon(Icons.add),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class TenantDetailPage extends StatelessWidget {
+  final Tenant tenant;
+  final dynamic Function(Tenant tenant) saveTenant;
+  final dynamic Function(Tenant tenant) removeTenant;
+
+  const TenantDetailPage(
+      {super.key,
+      required this.tenant,
+      required this.saveTenant,
+      required this.removeTenant});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: ListTile(
+          title: Text(
+            tenant.name,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            tenant.detail,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15),
+        child: FormBuilder(
+          inputFields: const [
+            InputText(
+              name: 'name',
+              label: 'Name',
+            ),
+            InputText(
+              name: 'detail',
+              label: 'detail',
+              isMultilines: true,
+            ),
+          ],
+          onInitial: (context, inputValues) {
+            inputValues['name']!.setString(tenant.name);
+            inputValues['detail']!.setString(tenant.detail);
+          },
+          onSubmit: (context, inputValues) async {
+            Tenant result = Tenant(
+              name: inputValues['name']!.getString()!,
+              detail: inputValues['detail']!.getString()!,
+              owner: tenant.owner,
+            );
+            await saveTenant.call(result);
+
+            if (!context.mounted) return;
+
+            Navigator.pop(context, result);
+          },
+          submitButtonSettings: const SubmitButtonSettings(
+            label: 'Save',
+            icon: Icon(Icons.save),
+          ),
+          additionalButtons: [
+            AdditionalButton(
+              label: 'Remove',
+              icon: const Icon(Icons.remove),
+              onTap: () {},
+            )
+          ],
         ),
       ),
     );
@@ -224,8 +389,11 @@ class _LoggingOutPageState extends State<LoggingOutPage> {
 }
 
 class Tenant {
+  final dynamic id;
   final String name;
-  final String desctiption;
+  final String detail;
+  final String owner;
 
-  Tenant({required this.name, required this.desctiption});
+  Tenant(
+      {this.id, required this.name, required this.detail, required this.owner});
 }
