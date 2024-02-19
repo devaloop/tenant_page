@@ -12,7 +12,7 @@ class TenantPage extends StatefulWidget {
   final dynamic Function(Tenant tenant) addTenant;
   final dynamic Function(Tenant tenant) saveTenant;
   final dynamic Function(Tenant tenant) removeTenant;
-  final Future<List<GroupContent>> Function() tenants;
+  final Future<List<Tenant>> Function() tenants;
   final String userName;
   final String userDetail;
   final dynamic Function() onLoggingOut;
@@ -39,7 +39,7 @@ class TenantPage extends StatefulWidget {
 }
 
 class _TenantPageState extends State<TenantPage> {
-  late Future<List<GroupContent>> _tenants;
+  late Future<List<Tenant>> _tenants;
   Tenant? _currentTenant;
 
   void init() {
@@ -94,57 +94,61 @@ class _TenantPageState extends State<TenantPage> {
                       GroupItem(
                         title: widget.tenantCategoryName,
                         contents: snapshot.data!.map((e) {
+                          var ownerMenu = [
+                            GroupItem(
+                              title: 'Owner Access',
+                              contents: [
+                                GroupContent(
+                                  title: 'Edit',
+                                  subtitle: 'Edit',
+                                  leading: const Icon(Icons.edit),
+                                  detail: Detail(
+                                    detailPage: TenantDetailPage(
+                                      tenant: e,
+                                      saveTenant: widget.saveTenant,
+                                      removeTenant: widget.removeTenant,
+                                    ),
+                                    onDetailPageClosed: (result) {
+                                      Navigator.pop(context, true);
+                                    },
+                                  ),
+                                ),
+                                GroupContent(
+                                  title: 'Owner Menu',
+                                  subtitle: 'Owner Menu',
+                                  leading:
+                                      const Icon(Icons.admin_panel_settings),
+                                  detail: Detail(
+                                    detailPage: MenuPage(
+                                      title: 'Owner Menu',
+                                      subtitle: 'Owner Menu',
+                                      menu: widget.ownerMenu,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ];
+                          ownerMenu.addAll(widget.menu);
                           return GroupContent(
-                            title: e.title,
-                            subtitle: e.subtitle,
-                            key: e.key,
+                            title: e.name,
+                            subtitle: e.detail,
+                            key: e.id,
+                            leading: const Icon(Icons.menu),
                             detail: Detail(
-                              detailPage: e.key != null &&
-                                      (e.key as Tenant).owner == widget.userName
+                              detailPage: e.owner == widget.userName
                                   ? MenuPage(
                                       title: _currentTenant == null
-                                          ? e.title
+                                          ? e.name
                                           : _currentTenant!.name,
                                       subtitle: _currentTenant == null
-                                          ? e.subtitle
+                                          ? e.detail
                                           : _currentTenant!.detail,
-                                      menu: [
-                                        GroupItem(
-                                          title: 'Owner Access',
-                                          contents: [
-                                            GroupContent(
-                                              title: 'Edit',
-                                              subtitle: 'Edit',
-                                              detail: Detail(
-                                                detailPage: TenantDetailPage(
-                                                  tenant: (e.key as Tenant),
-                                                  saveTenant: widget.saveTenant,
-                                                  removeTenant:
-                                                      widget.removeTenant,
-                                                ),
-                                                onDetailPageClosed: (result) {
-                                                  Navigator.pop(context, true);
-                                                },
-                                              ),
-                                            ),
-                                            GroupContent(
-                                              title: 'Owner Menu',
-                                              subtitle: 'Owner Menu',
-                                              detail: Detail(
-                                                detailPage: MenuPage(
-                                                  title: 'Owner Menu',
-                                                  subtitle: 'Owner Menu',
-                                                  menu: widget.ownerMenu,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                      menu: ownerMenu,
                                     )
                                   : MenuPage(
-                                      title: e.title,
-                                      subtitle: e.subtitle,
+                                      title: e.name,
+                                      subtitle: e.detail,
                                       menu: widget.menu,
                                     ),
                               onDetailPageClosed: (result) {

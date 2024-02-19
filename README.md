@@ -30,34 +30,67 @@ class MyApp extends StatelessWidget {
         tenants: () async {
           await Future.delayed(const Duration(seconds: 5));
           return [
-            GroupContent(
-              leading: const Icon(Icons.person),
-              title: 'Toko Modern Sejahtera',
-              subtitle: 'Toko Alat Masak & Perabotan Rumah Tangga',
-              key: Tenant(
-                id: '001',
-                name: 'Toko Modern Sejahtera',
-                detail: 'Toko Alat Masak & Perabotan Rumah Tangga',
-                owner: 'user@gmail.com',
-              ),
+            Tenant(
+              id: '001',
+              name: 'Toko Modern Sejahtera',
+              detail: 'Toko Alat Masak & Perabotan Rumah Tangga',
+              owner: 'user@gmail.com',
             ),
-            GroupContent(
-              leading: const Icon(Icons.person),
-              title: 'Toko Abadi Jaya',
-              subtitle: 'Toko Perlengkapan Listrik & Bangunan',
+            Tenant(
+              id: '001',
+              name: 'Toko Abadi Jaya',
+              detail: 'Toko Alat Bagungan',
+              owner: 'user1@gmail.com',
             ),
-            GroupContent(
-              leading: const Icon(Icons.person),
-              title: 'Toko Sentosa',
-              subtitle: 'Toko Kemasan & Plastik Serbaguna',
+            Tenant(
+              id: '001',
+              name: 'Toko Sentosa',
+              detail: 'Toko Listrik',
+              owner: 'user2@gmail.com',
             ),
           ];
         },
         userName: 'user@gmail.com',
         userDetail: 'Google Account',
         onLoggingOut: () {},
-        ownerMenu: const [],
-        menu: const [],
+        ownerMenu: [
+          GroupItem(
+            contents: [
+              GroupContent(
+                title: 'Report',
+                subtitle: 'Report',
+                leading: const Icon(Icons.summarize),
+              ),
+              GroupContent(
+                title: 'Add Cashier Staff',
+                subtitle: 'Add Cashier Staff',
+                leading: const Icon(Icons.people),
+              ),
+            ],
+          )
+        ],
+        menu: [
+          GroupItem(
+            title: 'Transaction',
+            contents: [
+              GroupContent(
+                title: 'Sell',
+                subtitle: 'Sell',
+                leading: const Icon(Icons.sell),
+              ),
+            ],
+          ),
+          GroupItem(
+            title: 'Inventory',
+            contents: [
+              GroupContent(
+                title: 'Inventory',
+                subtitle: 'Inventory',
+                leading: const Icon(Icons.warehouse),
+              ),
+            ],
+          ),
+        ],
         saveTenant: (Tenant tenant) {},
         removeTenant: (Tenant tenant) {},
       ),
