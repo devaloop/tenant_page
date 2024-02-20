@@ -1,5 +1,6 @@
 library devaloop_tenant_page;
 
+import 'package:devaloop_form_builder/input_field_text.dart';
 import 'package:devaloop_menu_page/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:devaloop_group_item/group_item.dart';
@@ -99,9 +100,10 @@ class _TenantPageState extends State<TenantPage> {
                               title: 'Owner Access',
                               contents: [
                                 GroupContent(
-                                  title: 'Edit',
-                                  subtitle: 'Edit',
-                                  leading: const Icon(Icons.edit),
+                                  title: '${widget.tenantCategoryName} Setting',
+                                  subtitle:
+                                      '${widget.tenantCategoryName} Setting',
+                                  leading: const Icon(Icons.settings),
                                   detail: Detail(
                                     detailPage: TenantDetailPage(
                                       tenant: e,
@@ -238,15 +240,34 @@ class TenantAddPage extends StatelessWidget {
               label: 'Detail',
               isMultilines: true,
             ),
+            InputForm(
+              name: 'staff',
+              label: 'Staff',
+              inputFields: [
+                InputText(
+                  name: 'name',
+                  label: 'Name',
+                ),
+                InputText(
+                  name: 'username',
+                  label: 'Email (Google Mail)',
+                  inputTextMode: InputTextMode.email,
+                ),
+              ],
+            ),
           ],
           onSubmit: (context, inputValues) async {
-            await addTenant.call(
-              Tenant(
+            var staff = inputValues['staff']!.getFormValues();
+
+            Tenant tenant = Tenant(
                 name: inputValues['name']!.getString()!,
                 detail: inputValues['detail']!.getString()!,
                 owner: userName,
-              ),
-            );
+                staff: staff
+                    .map((e) => Staff(name: e['name'], username: e['username']))
+                    .toList());
+
+            await addTenant.call(tenant);
 
             if (!context.mounted) return;
 
@@ -301,18 +322,48 @@ class TenantDetailPage extends StatelessWidget {
               label: 'detail',
               isMultilines: true,
             ),
+            InputForm(
+              name: 'staff',
+              label: 'Staff',
+              inputFields: [
+                InputText(
+                  name: 'name',
+                  label: 'Name',
+                ),
+                InputText(
+                  name: 'username',
+                  label: 'Email (Google Mail)',
+                  inputTextMode: InputTextMode.email,
+                ),
+              ],
+            ),
           ],
           onInitial: (context, inputValues) {
             inputValues['name']!.setString(tenant.name);
             inputValues['detail']!.setString(tenant.detail);
+            if (tenant.staff != null && tenant.staff!.isNotEmpty) {
+              List<Map<String, dynamic>> value = [];
+              for (var element in tenant.staff!) {
+                value.add({'name': element.name, 'username': element.username});
+              }
+              inputValues['staff']!.setFormValues(value);
+            }
           },
           onSubmit: (context, inputValues) async {
+            var staff = inputValues['staff']!.getFormValues();
+
             Tenant result = Tenant(
-              id: tenant.id,
-              name: inputValues['name']!.getString()!,
-              detail: inputValues['detail']!.getString()!,
-              owner: tenant.owner,
-            );
+                id: tenant.id,
+                name: inputValues['name']!.getString()!,
+                detail: inputValues['detail']!.getString()!,
+                owner: tenant.owner,
+                staff: staff
+                    .map((e) => Staff(
+                          id: null, //TODO: Need new InputHidden in the FormBuilder package
+                          name: e['name'],
+                          username: e['username'],
+                        ))
+                    .toList());
             await updateTenant.call(result);
 
             if (!context.mounted) return;
@@ -404,7 +455,20 @@ class Tenant {
   final String name;
   final String detail;
   final String owner;
+  final List<Staff>? staff;
 
   Tenant(
-      {this.id, required this.name, required this.detail, required this.owner});
+      {this.id,
+      required this.name,
+      required this.detail,
+      required this.owner,
+      this.staff});
+}
+
+class Staff {
+  final dynamic id;
+  final String name;
+  final String username;
+
+  Staff({this.id, required this.name, required this.username});
 }
