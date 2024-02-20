@@ -10,7 +10,7 @@ class TenantPage extends StatefulWidget {
   final String subtitle;
   final String tenantCategoryName;
   final dynamic Function(Tenant tenant) addTenant;
-  final dynamic Function(Tenant tenant) saveTenant;
+  final dynamic Function(Tenant tenant) updateTenant;
   final dynamic Function(Tenant tenant) removeTenant;
   final Future<List<Tenant>> Function() tenants;
   final String userName;
@@ -31,7 +31,7 @@ class TenantPage extends StatefulWidget {
       required this.onLoggingOut,
       required this.ownerMenu,
       required this.menu,
-      required this.saveTenant,
+      required this.updateTenant,
       required this.removeTenant});
 
   @override
@@ -105,7 +105,7 @@ class _TenantPageState extends State<TenantPage> {
                                   detail: Detail(
                                     detailPage: TenantDetailPage(
                                       tenant: e,
-                                      saveTenant: widget.saveTenant,
+                                      updateTenant: widget.updateTenant,
                                       removeTenant: widget.removeTenant,
                                     ),
                                     onDetailPageClosed: (result) {
@@ -264,13 +264,13 @@ class TenantAddPage extends StatelessWidget {
 
 class TenantDetailPage extends StatelessWidget {
   final Tenant tenant;
-  final dynamic Function(Tenant tenant) saveTenant;
+  final dynamic Function(Tenant tenant) updateTenant;
   final dynamic Function(Tenant tenant) removeTenant;
 
   const TenantDetailPage(
       {super.key,
       required this.tenant,
-      required this.saveTenant,
+      required this.updateTenant,
       required this.removeTenant});
 
   @override
@@ -308,11 +308,12 @@ class TenantDetailPage extends StatelessWidget {
           },
           onSubmit: (context, inputValues) async {
             Tenant result = Tenant(
+              id: tenant.id,
               name: inputValues['name']!.getString()!,
               detail: inputValues['detail']!.getString()!,
               owner: tenant.owner,
             );
-            await saveTenant.call(result);
+            await updateTenant.call(result);
 
             if (!context.mounted) return;
 
@@ -326,7 +327,13 @@ class TenantDetailPage extends StatelessWidget {
             AdditionalButton(
               label: 'Remove',
               icon: const Icon(Icons.remove),
-              onTap: () {},
+              onTap: () async {
+                await removeTenant.call(tenant);
+
+                if (!context.mounted) return;
+
+                Navigator.pop(context, tenant);
+              },
             )
           ],
         ),

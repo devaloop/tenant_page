@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
             ],
           ),
         ],
-        saveTenant: (Tenant tenant) {},
+        updateTenant: (Tenant tenant) {},
         removeTenant: (Tenant tenant) {},
       ),
     );

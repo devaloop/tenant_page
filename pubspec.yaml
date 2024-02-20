@@ -1,6 +1,6 @@
 name: devaloop_tenant_page
 description: "A Flutter TenantPage Package"
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/devaloop/tenant_page
 
 environment:
