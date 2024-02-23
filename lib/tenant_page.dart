@@ -326,6 +326,10 @@ class TenantDetailPage extends StatelessWidget {
               name: 'staff',
               label: 'Staff',
               inputFields: [
+                InputHidden(
+                  name: 'id',
+                  label: 'ID',
+                ),
                 InputText(
                   name: 'name',
                   label: 'Name',
@@ -344,7 +348,11 @@ class TenantDetailPage extends StatelessWidget {
             if (tenant.staff != null && tenant.staff!.isNotEmpty) {
               List<Map<String, dynamic>> value = [];
               for (var element in tenant.staff!) {
-                value.add({'name': element.name, 'username': element.username});
+                value.add({
+                  'id': element.id,
+                  'name': element.name,
+                  'username': element.username
+                });
               }
               inputValues['staff']!.setFormValues(value);
             }
@@ -359,7 +367,7 @@ class TenantDetailPage extends StatelessWidget {
                 owner: tenant.owner,
                 staff: staff
                     .map((e) => Staff(
-                          id: null, //TODO: Need new InputHidden in the FormBuilder package
+                          id: e['id'],
                           name: e['name'],
                           username: e['username'],
                         ))
