@@ -17,7 +17,7 @@ class TenantPage extends StatefulWidget {
   final String userName;
   final String userDetail;
   final dynamic Function() onLoggingOut;
-  final List<GroupItem> ownerMenu;
+  final List<GroupContent> ownerAccessMenu;
   final List<GroupItem> menu;
 
   const TenantPage(
@@ -30,7 +30,7 @@ class TenantPage extends StatefulWidget {
       required this.userName,
       required this.userDetail,
       required this.onLoggingOut,
-      required this.ownerMenu,
+      required this.ownerAccessMenu,
       required this.menu,
       required this.updateTenant,
       required this.removeTenant});
@@ -95,45 +95,33 @@ class _TenantPageState extends State<TenantPage> {
                       GroupItem(
                         title: widget.tenantCategoryName,
                         contents: snapshot.data!.map((e) {
-                          var ownerMenu = [
-                            GroupItem(
-                              title: 'Owner Access',
-                              contents: [
-                                GroupContent(
-                                  title: '${widget.tenantCategoryName} Setting',
-                                  subtitle:
-                                      '${widget.tenantCategoryName} Setting',
-                                  leading: const Icon(Icons.settings),
-                                  detail: Detail(
-                                    detailPage: TenantDetailPage(
-                                      tenant: e,
-                                      updateTenant: widget.updateTenant,
-                                      removeTenant: widget.removeTenant,
-                                      tenantCategoryName:
-                                          widget.tenantCategoryName,
-                                    ),
-                                    onDetailPageClosed: (result) {
-                                      Navigator.pop(context, true);
-                                    },
-                                  ),
+                          var ownerAccess = [
+                            GroupContent(
+                              title: '${widget.tenantCategoryName} Setting',
+                              subtitle: '${widget.tenantCategoryName} Setting',
+                              leading: const Icon(Icons.settings),
+                              detail: Detail(
+                                detailPage: TenantDetailPage(
+                                  tenant: e,
+                                  updateTenant: widget.updateTenant,
+                                  removeTenant: widget.removeTenant,
+                                  tenantCategoryName: widget.tenantCategoryName,
                                 ),
-                                GroupContent(
-                                  title: 'Owner Menu',
-                                  subtitle: 'Owner Menu',
-                                  leading:
-                                      const Icon(Icons.admin_panel_settings),
-                                  detail: Detail(
-                                    detailPage: MenuPage(
-                                      title: 'Owner Menu',
-                                      subtitle: 'Owner Menu',
-                                      menu: widget.ownerMenu,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                onDetailPageClosed: (result) {
+                                  Navigator.pop(context, true);
+                                },
+                              ),
                             ),
                           ];
-                          ownerMenu.addAll(widget.menu);
+                          ownerAccess.addAll(widget.ownerAccessMenu);
+
+                          var tenantMenu = [
+                            GroupItem(
+                              title: 'Owner Access',
+                              contents: ownerAccess,
+                            ),
+                          ];
+                          tenantMenu.addAll(widget.menu);
                           return GroupContent(
                             title: e.name,
                             subtitle: e.detail,
@@ -148,7 +136,7 @@ class _TenantPageState extends State<TenantPage> {
                                       subtitle: _currentTenant == null
                                           ? e.detail
                                           : _currentTenant!.detail,
-                                      menu: ownerMenu,
+                                      menu: tenantMenu,
                                     )
                                   : MenuPage(
                                       title: e.name,

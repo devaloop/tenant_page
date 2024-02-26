@@ -60,21 +60,17 @@ class MyApp extends StatelessWidget {
         userName: 'user@gmail.com',
         userDetail: 'Google Account',
         onLoggingOut: () {},
-        ownerMenu: [
-          GroupItem(
-            contents: [
-              GroupContent(
-                title: 'Report',
-                subtitle: 'Report',
-                leading: const Icon(Icons.summarize),
-              ),
-              GroupContent(
-                title: 'Add Cashier Staff',
-                subtitle: 'Add Cashier Staff',
-                leading: const Icon(Icons.people),
-              ),
-            ],
-          )
+        ownerAccessMenu: [
+          GroupContent(
+            title: 'Report',
+            subtitle: 'Report',
+            leading: const Icon(Icons.summarize),
+          ),
+          GroupContent(
+            title: 'Add Cashier Staff',
+            subtitle: 'Add Cashier Staff',
+            leading: const Icon(Icons.people),
+          ),
         ],
         menu: [
           GroupItem(
