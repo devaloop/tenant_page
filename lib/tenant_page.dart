@@ -109,6 +109,8 @@ class _TenantPageState extends State<TenantPage> {
                                       tenant: e,
                                       updateTenant: widget.updateTenant,
                                       removeTenant: widget.removeTenant,
+                                      tenantCategoryName:
+                                          widget.tenantCategoryName,
                                     ),
                                     onDetailPageClosed: (result) {
                                       Navigator.pop(context, true);
@@ -285,6 +287,7 @@ class TenantAddPage extends StatelessWidget {
 
 class TenantDetailPage extends StatelessWidget {
   final Tenant tenant;
+  final String tenantCategoryName;
   final dynamic Function(Tenant tenant) updateTenant;
   final dynamic Function(Tenant tenant) removeTenant;
 
@@ -292,7 +295,8 @@ class TenantDetailPage extends StatelessWidget {
       {super.key,
       required this.tenant,
       required this.updateTenant,
-      required this.removeTenant});
+      required this.removeTenant,
+      required this.tenantCategoryName});
 
   @override
   Widget build(BuildContext context) {
@@ -312,19 +316,20 @@ class TenantDetailPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: FormBuilder(
-          inputFields: const [
+          inputFields: [
             InputText(
               name: 'name',
-              label: 'Name',
+              label: '$tenantCategoryName Name',
             ),
             InputText(
               name: 'detail',
-              label: 'detail',
+              label: '$tenantCategoryName Detail',
               isMultilines: true,
             ),
-            InputForm(
+            const InputForm(
               name: 'staff',
               label: 'Staff',
+              isOptional: true,
               inputFields: [
                 InputHidden(
                   name: 'id',
@@ -358,7 +363,7 @@ class TenantDetailPage extends StatelessWidget {
             }
           },
           onSubmit: (context, inputValues) async {
-            var staff = inputValues['staff']!.getFormValues();
+            var staff = inputValues['staff']?.getFormValues();
 
             Tenant result = Tenant(
                 id: tenant.id,
@@ -366,7 +371,7 @@ class TenantDetailPage extends StatelessWidget {
                 detail: inputValues['detail']!.getString()!,
                 owner: tenant.owner,
                 staff: staff
-                    .map((e) => Staff(
+                    ?.map((e) => Staff(
                           id: e['id'],
                           name: e['name'],
                           username: e['username'],

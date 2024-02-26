@@ -30,12 +30,19 @@ class MyApp extends StatelessWidget {
               name: 'Toko Modern Sejahtera',
               detail: 'Toko Alat Masak & Perabotan Rumah Tangga',
               owner: 'user@gmail.com',
+              staff: [
+                Staff(
+                  name: 'Budi',
+                  username: 'budi@gmail.com',
+                  id: 1001,
+                ),
+              ],
             ),
             Tenant(
               id: '001',
               name: 'Toko Abadi Jaya',
               detail: 'Toko Alat Bagungan',
-              owner: 'user1@gmail.com',
+              owner: 'user@gmail.com',
             ),
             Tenant(
               id: '001',
