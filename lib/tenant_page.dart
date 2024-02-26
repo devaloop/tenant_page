@@ -329,6 +329,7 @@ class TenantDetailPage extends StatelessWidget {
             const InputForm(
               name: 'staff',
               label: 'Staff',
+              isMultiInputForm: true,
               isOptional: true,
               inputFields: [
                 InputHidden(
