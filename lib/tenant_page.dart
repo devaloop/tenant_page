@@ -245,6 +245,8 @@ class TenantAddPage extends StatelessWidget {
             InputForm(
               name: 'staff',
               label: 'Staff',
+              isMultiInputForm: true,
+              isOptional: true,
               inputFields: [
                 InputText(
                   name: 'name',
@@ -259,14 +261,15 @@ class TenantAddPage extends StatelessWidget {
             ),
           ],
           onSubmit: (context, inputValues) async {
-            var staff = inputValues['staff']!.getFormValues();
+            var staff = inputValues['staff']?.getFormValues();
 
             Tenant tenant = Tenant(
                 name: inputValues['name']!.getString()!,
                 detail: inputValues['detail']!.getString()!,
                 owner: userName,
                 staff: staff
-                    .map((e) => Staff(name: e['name'], username: e['username']))
+                    ?.map(
+                        (e) => Staff(name: e['name'], username: e['username']))
                     .toList());
 
             await addTenant.call(tenant);
