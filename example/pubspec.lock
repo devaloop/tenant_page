@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: devaloop_form_builder
-      sha256: bfa428c0bfc6693181bb7db862989e8ad3bf9afa12ccc13c86acd6045a1f1b62
+      sha256: "6a3496b7e02459a4feef6bf9a58fac9902dc78e36b8b51ae3127bfca535405b5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.7"
+    version: "0.1.2"
   devaloop_group_item:
     dependency: "direct main"
     description:
@@ -79,7 +79,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.7"
+    version: "0.1.1"
   fake_async:
     dependency: transitive
     description:

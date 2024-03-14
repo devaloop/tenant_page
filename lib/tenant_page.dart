@@ -7,6 +7,7 @@ import 'package:devaloop_group_item/group_item.dart';
 import 'package:devaloop_form_builder/form_builder.dart';
 
 class TenantPage extends StatefulWidget {
+  final Widget? leading;
   final String title;
   final String subtitle;
   final String tenantCategoryName;
@@ -22,6 +23,7 @@ class TenantPage extends StatefulWidget {
 
   const TenantPage(
       {super.key,
+      this.leading,
       required this.title,
       required this.subtitle,
       required this.tenants,
@@ -60,9 +62,16 @@ class _TenantPageState extends State<TenantPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: widget.leading,
         title: ListTile(
-          title: Text(widget.title),
-          subtitle: Text(widget.subtitle),
+          title: Text(
+            widget.title,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            widget.subtitle,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -383,7 +392,7 @@ class TenantDetailPage extends StatelessWidget {
             AdditionalButton(
               label: 'Remove',
               icon: const Icon(Icons.remove),
-              onTap: () async {
+              onTap: (context, inputValues) async {
                 await removeTenant.call(tenant);
 
                 if (!context.mounted) return;
@@ -428,8 +437,14 @@ class _LoggingOutPageState extends State<LoggingOutPage> {
     return Scaffold(
       appBar: AppBar(
         title: ListTile(
-          title: Text(widget.username),
-          subtitle: Text(widget.detail),
+          title: Text(
+            widget.username,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            widget.detail,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
       body: Center(
