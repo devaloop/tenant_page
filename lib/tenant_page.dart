@@ -18,8 +18,8 @@ class TenantPage extends StatefulWidget {
   final String userName;
   final String userDetail;
   final dynamic Function() onLoggingOut;
-  final List<GroupContent> ownerAccessMenu;
-  final List<GroupItem> menu;
+  final List<GroupContent> Function(Tenant tenant) ownerAccessMenu;
+  final List<GroupItem> Function(Tenant tenant) menu;
 
   const TenantPage(
       {super.key,
@@ -122,7 +122,7 @@ class _TenantPageState extends State<TenantPage> {
                               ),
                             ),
                           ];
-                          ownerAccess.addAll(widget.ownerAccessMenu);
+                          ownerAccess.addAll(widget.ownerAccessMenu.call(e));
 
                           var tenantMenu = [
                             GroupItem(
@@ -130,7 +130,7 @@ class _TenantPageState extends State<TenantPage> {
                               contents: ownerAccess,
                             ),
                           ];
-                          tenantMenu.addAll(widget.menu);
+                          tenantMenu.addAll(widget.menu.call(e));
                           return GroupContent(
                             title: e.name,
                             subtitle: e.detail,
@@ -150,7 +150,7 @@ class _TenantPageState extends State<TenantPage> {
                                   : MenuPage(
                                       title: e.name,
                                       subtitle: e.detail,
-                                      menu: widget.menu,
+                                      menu: widget.menu.call(e),
                                     ),
                               onDetailPageClosed: (result) {
                                 if (result != null) {

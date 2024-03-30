@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         userName: 'user@gmail.com',
         userDetail: 'Google Account',
         onLoggingOut: () {},
-        ownerAccessMenu: [
+        ownerAccessMenu: (tenant) => [
           GroupContent(
             title: 'Report',
             subtitle: 'Report',
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
             leading: const Icon(Icons.people),
           ),
         ],
-        menu: [
+        menu: (tenant) => [
           GroupItem(
             title: 'Transaction',
             contents: [
