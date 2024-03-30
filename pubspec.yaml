@@ -8,7 +8,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  devaloop_form_builder: ^0.1.5
+  devaloop_form_builder: ^0.1.6
   devaloop_group_item: ^0.0.3
   devaloop_menu_page: ^0.0.3
   flutter:
